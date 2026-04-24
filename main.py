@@ -1,11 +1,11 @@
+import os
 import google.generativeai as genai
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-# 1. Gemini 설정 및 시스템 지시어 정의
-# 이 부분이 챗봇의 '정체성'과 '지식 범위'를 결정하는 핵심 키워드 구간입니다.
-API_KEY = "AIzaSyAhxzQ4PK6uXF3BeCyA00PPgTXBtWkYfJw"
+# 💡 수정된 부분: 코드에 키를 직접 적지 않고, 서버 환경 변수에서 가져옵니다.
+API_KEY = os.getenv("GEMINI_API_KEY") 
 genai.configure(api_key=API_KEY)
 
 # 질문 종류가 적으므로, 시스템 지시어에 매뉴얼을 직접 주입합니다.
