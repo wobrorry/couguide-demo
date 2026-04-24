@@ -301,53 +301,7 @@
         </div>
     </div>
 
-    <div id="calculator-container" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 15px; font-family: sans-serif; background: #f9f9f9;">
-    <h2 style="text-align: center; color: #1a73e8;">Gemini 2.5 Flash 비용 계산기</h2>
     
-    <div style="margin-bottom: 15px;">
-        <label>하루 예상 문의량: <span id="req-val">20,000</span>건</label>
-        <input type="range" id="requests" min="1000" max="100000" step="1000" value="20000" style="width: 100%;">
-    </div>
-
-    <div style="margin-bottom: 15px;">
-        <label>평균 답변 길이(토큰): <span id="out-val">300</span></label>
-        <input type="range" id="output-tokens" min="100" max="2000" step="100" value="300" style="width: 100%;">
-    </div>
-
-    <hr style="border: 0.5px solid #eee;">
-
-    <div style="background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-        <p style="margin: 5px 0;">월 예상 비용 (USD): <strong id="cost-usd" style="color: #d93025;">$0.00</strong></p>
-        <p style="margin: 5px 0;">월 예상 비용 (KRW): <strong id="cost-krw" style="color: #1a73e8;">0원</strong></p>
-        <p style="font-size: 0.8rem; color: #666;">*환율 1,400원, Gemini 2.5 Flash 단가 기준</p>
-    </div>
-</div>
-
-<script>
-    const reqInput = document.getElementById('requests');
-    const outInput = document.getElementById('output-tokens');
-    
-    function updateCalc() {
-        const reqs = parseInt(reqInput.value);
-        const outTokens = parseInt(outInput.value);
-        const inTokens = 600; // 시스템 프롬프트 포함 고정값 가정
-        
-        document.getElementById('req-val').innerText = reqs.toLocaleString();
-        document.getElementById('out-val').innerText = outTokens.toLocaleString();
-
-        // Gemini 2.5 Flash 단가: Input $0.30/1M, Output $2.50/1M
-        const monthlyInputCost = (reqs * 30 * inTokens / 1000000) * 0.30;
-        const monthlyOutputCost = (reqs * 30 * outTokens / 1000000) * 2.50;
-        const totalUSD = monthlyInputCost + monthlyOutputCost;
-        
-        document.getElementById('cost-usd').innerText = '$' + totalUSD.toFixed(2);
-        document.getElementById('cost-krw').innerText = Math.round(totalUSD * 1400).toLocaleString() + '원';
-    }
-
-    reqInput.addEventListener('input', updateCalc);
-    outInput.addEventListener('input', updateCalc);
-    updateCalc(); // 초기 실행
-</script>
 
     <script>
         const landingScreen = document.getElementById("landing-screen");
