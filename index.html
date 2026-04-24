@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COUGUIDE</title>
+    <style>
+        /* =========================================
+           1. 폰트 및 공통 설정
+           ========================================= */
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+        body {
+            font-family: "Pretendard Variable", Pretendard, sans-serif;
+            margin: 0; padding: 0;
+            background-color: #f2f5f8; 
+            height: 100vh;
+            display: flex; flex-direction: column;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .screen {
+            display: none; 
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .screen.active {
+            display: flex; 
+        }
+
+        /* =========================================
+           2. 공통 헤더 (텍스트 로고 강조)
+           ========================================= */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px;
+            background-color: white; 
+            border-bottom: 1px solid #e0e5ea;
+            z-index: 10;
+        }
+        
+        .header-left {
+            display: flex; align-items: center; gap: 20px;
+        }
+
+        .back-btn {
+            background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #333;
+            display: none; 
+        }
+        
+        .text-logo {
+            font-size: 1.25rem; 
+            font-weight: 900; 
+            color: #111; 
+            cursor: pointer;
+            letter-spacing: -0.8px; 
+            margin: 0 auto; 
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .lang-toggle {
+            display: flex; align-items: center;
+            background-color: #eef1f6;
+            border-radius: 20px;
+            padding: 4px;
+            font-size: 0.8rem; font-weight: 700; color: #888;
+        }
+        .lang-toggle .active {
+            background-color: #0078ff; color: white;
+            border-radius: 15px; padding: 4px 12px;
+        }
+        .lang-toggle .inactive {
+            padding: 4px 12px; cursor: default;
+        }
+
+        /* =========================================
+           3. 메인 첫 화면 (Landing Screen)
+           ========================================= */
+        #landing-screen main {
+            flex: 1;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+            margin-top: -50px; 
+        }
+        
+        .center-character {
+            width: 25vw; 
+            max-width: 260px; 
+            min-width: 160px; 
+            margin-bottom: 25px;
+            transition: width 0.3s ease; 
+        }
+
+        .main-title {
+            font-size: 1.7rem; 
+            font-weight: 800; 
+            color: #111; 
+            line-height: 1.4; 
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
+
+        .landing-input-box {
+            display: flex; align-items: center;
+            background-color: white;
+            width: 100%; max-width: 600px;
+            border-radius: 30px;
+            padding: 8px 10px 8px 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e0e5ea;
+        }
+        .landing-input-box input {
+            flex: 1; border: none; outline: none;
+            font-size: 1.1rem; padding: 10px 0;
+            color: #333; background: transparent;
+            font-family: inherit;
+        }
+        .landing-input-box input::placeholder { color: #999; }
+        
+        .send-btn-large {
+            background-color: #92bcf7; color: white;
+            border: none; border-radius: 50%;
+            width: 45px; height: 45px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .send-btn-large:hover { background-color: #79aef5; }
+        .send-btn-large svg { width: 20px; height: 20px; fill: white; transform: translateX(-2px); }
+
+        .disclaimer {
+            margin-top: 25px; font-size: 0.85rem; color: #888; line-height: 1.6;
+        }
+
+        /* =========================================
+           4. 채팅 화면 (Chat Screen)
+           ========================================= */
+        #chat-screen {
+            position: relative;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            overflow-y: auto;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .chat-box {
+            width: 100%;
+            max-width: 800px; 
+            display: flex; flex-direction: column;
+            gap: 20px;
+        }
+
+        .message-row { 
+            display: flex; gap: 12px; align-items: flex-start; 
+            width: 100%;
+        }
+        
+        .user-row { justify-content: flex-end; }
+        .bot-row { justify-content: flex-start; }
+        
+        .bot-avatar {
+            width: 40px; height: 40px; border-radius: 12px;
+            background-color: #0078ff; color: white;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 800; flex-shrink: 0;
+            margin-top: 5px;
+        }
+        
+        .message-bubble {
+            padding: 14px 20px;
+            font-size: 1rem; 
+            line-height: 1.6; 
+            word-break: break-word;
+            max-width: 70%; 
+            /* 💡 파이썬이 보낸 줄바꿈(엔터)을 그대로 화면에 표시! */
+            white-space: pre-wrap; 
+        }
+
+        .bot-message-bubble {
+            background-color: white;
+            color: #111;
+            border-radius: 0 20px 20px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            border: 1px solid #eef1f6;
+        }
+
+        .user-message-bubble {
+            background-color: #0078ff;
+            color: white;
+            border-radius: 20px 20px 0 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .chat-disclaimer {
+            text-align: center; font-size: 0.8rem; color: #888;
+            margin-top: 30px; margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        .footer { 
+            background-color: white;
+            padding: 15px 30px 20px 30px; 
+            display: flex; justify-content: center;
+            border-top: 1px solid #e0e5ea;
+        }
+        
+        .chat-input-wrapper {
+            width: 100%; max-width: 800px; 
+            display: flex; align-items: center;
+            background-color: #f2f5f8; border-radius: 30px;
+            padding: 5px 10px 5px 20px; 
+        }
+        
+        .chat-input-wrapper input {
+            flex: 1; border: none; outline: none; font-size: 1rem; padding: 12px 0; background: transparent;
+            font-family: inherit;
+        }
+        
+        .send-btn-small {
+            background-color: #92bcf7; color: white; border: none; border-radius: 50%;
+            width: 40px; height: 40px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; transition: 0.2s;
+        }
+        .send-btn-small:hover { background-color: #79aef5; }
+        .send-btn-small svg { width: 18px; height: 18px; fill: white; transform: translateX(-1px); }
+    </style>
+</head>
+<body>
+
+    <div id="landing-screen" class="screen active">
+        <header class="header">
+            <div class="header-left"></div>
+            <div class="text-logo" onclick="goToLanding()">COUGUIDE</div>
+            <div class="lang-toggle">
+                <span class="active">KO</span>
+                <span class="inactive">EN</span>
+            </div>
+        </header>
+        
+        <main>
+            <img src="character.png" alt="Mascot" class="center-character">
+            <div class="main-title">
+                CLS 캠프헬퍼를 위한<br>다양한 채용 가이드를 만나보세요
+            </div>
+
+            <div class="landing-input-box">
+                <input type="text" id="landingInput" placeholder="무엇을 도와드릴까요?" onkeypress="handleLandingEnter(event)">
+                <button class="send-btn-large" onclick="startChatFromLanding()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+
+            <div class="disclaimer">
+                ⓘ AI 챗봇은 오류가 있을 수 있습니다. 중요한 사항은 상담으로 문의해주세요.<br>
+                개인정보 입력은 주의해주세요.
+            </div>
+        </main>
+    </div>
+
+    <div id="chat-screen" class="screen">
+        <header class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="goToLanding()">❮</button>
+            </div>
+            <div class="text-logo" onclick="goToLanding()">COUGUIDE</div>
+            <div class="lang-toggle">
+                <span class="active">KO</span>
+                <span class="inactive">EN</span>
+            </div>
+        </header>
+
+        <div class="chat-container">
+            <div class="chat-box" id="chatBox">
+                <div class="message-row bot-row">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="message-bubble bot-message-bubble">안녕하세요! COUGUIDE입니다. 무엇을 도와드릴까요?</div>
+                </div>
+            </div>
+            <div class="chat-disclaimer">
+                AI 챗봇은 오류가 있을 수 있습니다. 중요한 사항은 상담으로 문의해주세요.
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="chat-input-wrapper">
+                <input type="text" id="chatInput" placeholder="무엇을 도와드릴까요?" onkeypress="handleChatEnter(event)">
+                <button class="send-btn-small" onclick="sendMessageFromChat()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const landingScreen = document.getElementById("landing-screen");
+        const chatScreen = document.getElementById("chat-screen");
+        const landingInput = document.getElementById("landingInput");
+        const chatInput = document.getElementById("chatInput");
+        const chatBox = document.getElementById("chatBox");
+        const chatContainer = document.querySelector(".chat-container");
+
+        function goToLanding() {
+            chatScreen.classList.remove("active");
+            landingScreen.classList.add("active");
+            landingInput.value = "";
+            chatBox.innerHTML = `
+                <div class="message-row bot-row">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="message-bubble bot-message-bubble">안녕하세요! COUGUIDE입니다. 무엇을 도와드릴까요?</div>
+                </div>
+            `;
+        }
+
+        function handleLandingEnter(event) {
+            if (event.key === "Enter") startChatFromLanding();
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === "Enter") sendMessageFromChat();
+        }
+
+        function startChatFromLanding() {
+            const text = landingInput.value.trim();
+            if (!text) return;
+            landingScreen.classList.remove("active");
+            chatScreen.classList.add("active");
+            document.querySelector('.back-btn').style.display = 'block';
+            executeChatLogic(text);
+        }
+
+        function sendMessageFromChat() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            executeChatLogic(text);
+            chatInput.value = ""; 
+        }
+
+        async function executeChatLogic(text) {
+            appendMessage("user", text);
+            try {
+                const response = await fetch("http://127.0.0.1:8000/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: text }) 
+                });
+                const data = await response.json();
+                appendMessage("bot", data.reply);
+            } catch (error) {
+                console.error("Error:", error);
+                appendMessage("bot", "서버와 연결할 수 없습니다. 백엔드 서버가 켜져 있는지 확인해 주세요.");
+            }
+        }
+
+        function appendMessage(sender, text) {
+            const row = document.createElement("div");
+            row.classList.add("message-row");
+            
+            if (sender === "user") {
+                row.classList.add("user-row");
+                row.innerHTML = `<div class="message-bubble user-message-bubble">${text}</div>`;
+            } else {
+                row.classList.add("bot-row");
+                
+                // 1. 굵은 글씨(**텍스트**) 변환
+                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
+                
+                // 2. 💡 링크(http:// 또는 https://) 자동 파란색 클릭 버튼 변환!
+                formattedText = formattedText.replace(
+                    /(https?:\/\/[^\s]+)/g, 
+                    '<a href="$1" target="_blank" style="color: #0078ff; text-decoration: underline; font-weight: 700;">$1</a>'
+                );
+
+                row.innerHTML = `
+                    <div class="bot-avatar">🤖</div>
+                    <div class="message-bubble bot-message-bubble">${formattedText}</div>
+                `;
+            }
+            
+            chatBox.appendChild(row);
+            chatContainer.scrollTop = chatContainer.scrollHeight; 
+        }
+    </script>
+</body>
+</html>
