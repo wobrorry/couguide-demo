@@ -74,6 +74,10 @@ class ChatRequest(BaseModel):
 async def read_index():
     return FileResponse("index.html")
 
+@app.get("/mascot.png")
+async def get_mascot():
+    return FileResponse("mascot.png")
+
 # 2. 뒷문: 화면 안에서 AI와 채팅을 주고받는 곳
 @app.post("/chat")
 async def chat(request: ChatRequest):
