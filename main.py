@@ -3,6 +3,7 @@ import google.generativeai as genai
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 # 💡 수정된 부분: 코드에 키를 직접 적지 않고, 서버 환경 변수에서 가져옵니다.
 API_KEY = os.getenv("GEMINI_API_KEY") 
@@ -71,6 +72,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def read_index():
+    return FileResponse("index.html")
 
 class ChatRequest(BaseModel):
     message: str
