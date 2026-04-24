@@ -2,9 +2,9 @@ import os
 import google.generativeai as genai
 from fastapi import FastAPI
 from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse # 화면 띄우는 도구
 
-# 1. API 키 설정 (환경변수에서 가져오기)
+# API 키 설정
 API_KEY = os.getenv("GEMINI_API_KEY") 
 genai.configure(api_key=API_KEY)
 
@@ -61,26 +61,20 @@ model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
     system_instruction=SYSTEM_INSTRUCTION
 )
-# 2. 서버 앱 생성
+# 서버 앱 생성
 app = FastAPI()
 
-# 💡 3. CORS 보안 해제 (반드시 app = FastAPI() 바로 밑에 있어야 합니다!)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], # 모든 도메인 허용 (Vercel 포함)
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 💡 Vercel을 안 쓰니까 복잡한 CORS 보안 설정은 싹 지워도 됩니다!
 
 class ChatRequest(BaseModel):
     message: str
 
-# 4. 정문 (생사 확인용)
+# 1. 정문: 사용자가 사이트에 들어오면 index.html 화면을 띄워준다.
 @app.get("/")
 async def read_index():
-    return {"message": "Render 파이썬 서버가 정상적으로 살아있습니다!"}
+    return FileResponse("index.html")
 
-# 5. 뒷문 (채팅용)
+# 2. 뒷문: 화면 안에서 AI와 채팅을 주고받는 곳
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
@@ -88,4 +82,4 @@ async def chat(request: ChatRequest):
         return {"reply": response.text}
     except Exception as e:
         print(f"서버 에러: {e}")
-        return {"reply": "서버 통신 에러. 1분 뒤 다시 시도해 주세요."}
+        return {"reply": "앗! 구글 서버와 통신 에러가 났어요. 1분 뒤 다시 시도해 주세요."}
