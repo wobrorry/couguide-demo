@@ -815,10 +815,10 @@
             const chatBox = document.getElementById(boxId);
             const container = document.getElementById(containerId);
 
-            // 사용자 메시지
+            // 1. 사용자 화면에는 원래 입력한 텍스트만 깔끔하게 표시
             appendMessageTo(chatBox, container, "user", text);
 
-            // 로딩 dots
+            // 로딩 dots 추가
             const loadingRow = document.createElement('div');
             loadingRow.className = 'message-row bot-row';
             loadingRow.id = 'loadingRow_' + boxId;
@@ -829,11 +829,20 @@
             chatBox.appendChild(loadingRow);
             container.scrollTop = container.scrollHeight;
 
+            // 💡 2. 서버로 보낼 '비밀 메시지' 가공
+            let payloadMessage = text;
+            
+            // 만약 캠프를 선택한 상태라면, 메시지 앞에 몰래 캠프 이름을 붙여줍니다.
+            if (campChatMode && selectedCamp) {
+                payloadMessage = `[현재 사용자가 질문하는 캠프: ${selectedCamp}] ` + text;
+            }
+
             try {
                 const response = await fetch("/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: text })
+                    // 3. 원래 text가 아닌, 캠프 이름이 붙은 payloadMessage를 서버로 전송!
+                    body: JSON.stringify({ message: payloadMessage })
                 });
                 const data = await response.json();
 
