@@ -5,63 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COUGUIDE</title>
     <style>
-        /* =========================================
-           1. 폰트 및 공통 설정
-           ========================================= */
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             font-family: "Pretendard Variable", Pretendard, sans-serif;
             margin: 0; padding: 0;
-            background-color: #f2f5f8; 
+            background-color: #f2f5f8;
             height: 100vh;
             display: flex; flex-direction: column;
             position: relative;
             -webkit-font-smoothing: antialiased;
-        }
-
-        .screen {
-            display: none; 
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-        .screen.active {
-            display: flex; 
+            overflow: hidden;
         }
 
         /* =========================================
-           2. 공통 헤더 (텍스트 로고 강조)
-           ========================================= */
+           공통: 화면 전환
+        ========================================= */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
+        .screen.active { display: flex; }
+
+        /* =========================================
+           공통 헤더
+        ========================================= */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px;
-            background-color: white; 
+            padding: 15px 20px;
+            background-color: white;
             border-bottom: 1px solid #e0e5ea;
             z-index: 10;
+            flex-shrink: 0;
+            position: relative;
+            min-height: 60px;
         }
-        
         .header-left {
-            display: flex; align-items: center; gap: 20px;
+            display: flex; align-items: center; gap: 10px;
+            min-width: 80px;
         }
-
+        .header-right {
+            display: flex; align-items: center; gap: 10px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
         .back-btn {
             background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #333;
-            display: none; 
+            padding: 5px; display: flex; align-items: center; justify-content: center;
         }
-        
         .text-logo {
-            font-size: 1.25rem; 
-            font-weight: 900; 
-            color: #111; 
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #111;
             cursor: pointer;
-            letter-spacing: -0.8px; 
-            margin: 0 auto; 
+            letter-spacing: -0.8px;
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 50%; transform: translateX(-50%);
         }
-
         .lang-toggle {
             display: flex; align-items: center;
             background-color: #eef1f6;
@@ -73,38 +79,106 @@
             background-color: #0078ff; color: white;
             border-radius: 15px; padding: 4px 12px;
         }
-        .lang-toggle .inactive {
-            padding: 4px 12px; cursor: default;
+        .lang-toggle .inactive { padding: 4px 12px; cursor: default; }
+
+        /* 캠프별 문의 버튼 (헤더용) */
+        .camp-inquiry-btn {
+            background: white;
+            border: 1.5px solid #0078ff;
+            color: #0078ff;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        .camp-inquiry-btn:hover { background: #f0f6ff; }
+
+        /* =========================================
+           1. 새 랜딩 화면 (홈)
+        ========================================= */
+        #home-screen {
+            background-color: #eef2f9;
+        }
+        #home-screen .header {
+            background-color: transparent;
+            border-bottom: none;
+        }
+        #home-screen main {
+            flex: 1;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+            gap: 0;
+        }
+        .home-mascot {
+            width: 130px;
+            margin-bottom: 30px;
+        }
+        .home-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #111;
+            line-height: 1.4;
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
+        .home-buttons {
+            display: flex; gap: 16px;
+            margin-bottom: 30px;
+        }
+        .home-btn {
+            padding: 18px 36px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+            letter-spacing: -0.3px;
+        }
+        .home-btn-primary {
+            background-color: #5b9cf6;
+            color: white;
+        }
+        .home-btn-primary:hover { background-color: #4a8be5; transform: translateY(-1px); }
+        .home-btn-secondary {
+            background-color: #7ab3f8;
+            color: white;
+        }
+        .home-btn-secondary:hover { background-color: #69a2e7; transform: translateY(-1px); }
+        .home-disclaimer {
+            font-size: 0.85rem; color: #888; line-height: 1.6;
         }
 
         /* =========================================
-           3. 메인 첫 화면 (Landing Screen)
-           ========================================= */
+           2. 일반문의 랜딩 화면 (기존 랜딩)
+        ========================================= */
         #landing-screen main {
             flex: 1;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 20px; text-align: center;
-            margin-top: -50px; 
+            margin-top: -30px;
         }
-        
         .center-character {
-            width: 25vw; 
-            max-width: 260px; 
-            min-width: 160px; 
+            width: 25vw;
+            max-width: 220px;
+            min-width: 140px;
             margin-bottom: 25px;
-            transition: width 0.3s ease; 
         }
-
         .main-title {
-            font-size: 1.7rem; 
-            font-weight: 800; 
-            color: #111; 
-            line-height: 1.4; 
-            margin-bottom: 40px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #111;
+            line-height: 1.4;
+            margin-bottom: 35px;
             letter-spacing: -0.5px;
         }
-
         .landing-input-box {
             display: flex; align-items: center;
             background-color: white;
@@ -116,150 +190,292 @@
         }
         .landing-input-box input {
             flex: 1; border: none; outline: none;
-            font-size: 1.1rem; padding: 10px 0;
+            font-size: 1.05rem; padding: 10px 0;
             color: #333; background: transparent;
             font-family: inherit;
         }
         .landing-input-box input::placeholder { color: #999; }
-        
         .send-btn-large {
             background-color: #92bcf7; color: white;
             border: none; border-radius: 50%;
             width: 45px; height: 45px;
             display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.2s;
+            cursor: pointer; transition: 0.2s; flex-shrink: 0;
         }
         .send-btn-large:hover { background-color: #79aef5; }
         .send-btn-large svg { width: 20px; height: 20px; fill: white; transform: translateX(-2px); }
-
         .disclaimer {
             margin-top: 25px; font-size: 0.85rem; color: #888; line-height: 1.6;
         }
 
         /* =========================================
-           4. 채팅 화면 (Chat Screen)
-           ========================================= */
-        #chat-screen {
-            position: relative;
-        }
-        
+           3. 채팅 화면 (일반 + 캠프)
+        ========================================= */
         .chat-container {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
+            display: flex; flex-direction: column;
+            align-items: center;
             overflow-y: auto;
-            padding: 40px 20px;
-            position: relative;
+            padding: 30px 20px 10px 20px;
         }
-
         .chat-box {
-            width: 100%;
-            max-width: 800px; 
+            width: 100%; max-width: 800px;
             display: flex; flex-direction: column;
             gap: 20px;
         }
-
-        .message-row { 
-            display: flex; gap: 12px; align-items: flex-start; 
+        .message-row {
+            display: flex; gap: 12px; align-items: flex-start;
             width: 100%;
         }
-        
         .user-row { justify-content: flex-end; }
         .bot-row { justify-content: flex-start; }
-        
         .bot-avatar {
             width: 40px; height: 40px; border-radius: 12px;
             background-color: #0078ff; color: white;
             display: flex; justify-content: center; align-items: center;
             font-weight: 800; flex-shrink: 0;
-            margin-top: 5px;
+            margin-top: 5px; font-size: 1.1rem;
         }
-        
         .message-bubble {
             padding: 14px 20px;
-            font-size: 1rem; 
-            line-height: 1.6; 
+            font-size: 0.98rem;
+            line-height: 1.65;
             word-break: break-word;
-            max-width: 70%; 
-            /* 💡 파이썬이 보낸 줄바꿈(엔터)을 그대로 화면에 표시! */
-            white-space: pre-wrap; 
+            max-width: 75%;
+            white-space: pre-wrap;
         }
-
         .bot-message-bubble {
             background-color: white;
             color: #111;
             border-radius: 0 20px 20px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid #eef1f6;
         }
-
         .user-message-bubble {
             background-color: #0078ff;
             color: white;
             border-radius: 20px 20px 0 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         }
-
         .chat-disclaimer {
-            text-align: center; font-size: 0.8rem; color: #888;
-            margin-top: 30px; margin-bottom: 10px;
+            text-align: center; font-size: 0.8rem; color: #999;
+            margin-top: 20px; margin-bottom: 10px;
             width: 100%;
         }
-        
-        .footer { 
+        .footer {
             background-color: white;
-            padding: 15px 30px 20px 30px; 
+            padding: 12px 20px 18px 20px;
             display: flex; justify-content: center;
             border-top: 1px solid #e0e5ea;
+            flex-shrink: 0;
         }
-        
         .chat-input-wrapper {
-            width: 100%; max-width: 800px; 
+            width: 100%; max-width: 800px;
             display: flex; align-items: center;
             background-color: #f2f5f8; border-radius: 30px;
-            padding: 5px 10px 5px 20px; 
+            padding: 5px 8px 5px 20px;
         }
-        
         .chat-input-wrapper input {
-            flex: 1; border: none; outline: none; font-size: 1rem; padding: 12px 0; background: transparent;
-            font-family: inherit;
+            flex: 1; border: none; outline: none;
+            font-size: 1rem; padding: 11px 0; background: transparent;
+            font-family: inherit; color: #333;
         }
-        
+        .chat-input-wrapper input::placeholder { color: #aaa; }
         .send-btn-small {
             background-color: #92bcf7; color: white; border: none; border-radius: 50%;
             width: 40px; height: 40px; cursor: pointer;
             display: flex; justify-content: center; align-items: center; transition: 0.2s;
+            flex-shrink: 0;
         }
         .send-btn-small:hover { background-color: #79aef5; }
         .send-btn-small svg { width: 18px; height: 18px; fill: white; transform: translateX(-1px); }
+
+        /* =========================================
+           4. 캠프 선택 카드 (봇 메시지 내부)
+        ========================================= */
+        .camp-card {
+            background: white;
+            border: 1px solid #e8ecf2;
+            border-radius: 18px;
+            padding: 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .camp-card-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 14px;
+            letter-spacing: -0.3px;
+        }
+
+        /* 탭 — 클릭 전환만 */
+        .region-tabs {
+            display: flex;
+            gap: 7px;
+            padding-bottom: 2px;
+            flex-wrap: wrap;
+        }
+        .region-tab {
+            padding: 7px 16px;
+            border-radius: 50px;
+            border: 1.5px solid #dde2ea;
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #555;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .region-tab.selected {
+            background-color: #0078ff;
+            border-color: #0078ff;
+            color: white;
+        }
+        .region-tab:hover:not(.selected) {
+            border-color: #0078ff;
+            color: #0078ff;
+        }
+
+        /* 스와이프 힌트 */
+        .swipe-hint {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: #bbb;
+            margin: 8px 0 12px 0;
+            gap: 6px;
+        }
+        .swipe-hint-arrow {
+            font-size: 0.75rem;
+            color: #ccc;
+            flex-shrink: 0;
+        }
+        .swipe-hint-center {
+            flex: 1;
+            text-align: center;
+        }
+        .swipe-hint-icon {
+            font-size: 0.85rem;
+        }
+
+        /* 구분선 */
+        .camp-divider {
+            border: none;
+            border-top: 1px solid #edf0f5;
+            margin: 12px 0 14px 0;
+        }
+
+        .camp-list {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            cursor: grab;
+            user-select: none;
+        }
+        .camp-list:active { cursor: grabbing; }
+        .camp-chip {
+            padding: 9px 18px;
+            border-radius: 50px;
+            border: 1.5px solid #dde2ea;
+            background: white;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.15s;
+        }
+        .camp-chip:hover {
+            border-color: #0078ff;
+            color: #0078ff;
+            background: #f0f6ff;
+        }
+
+        /* 로딩 dot 애니메이션 */
+        .typing-dots {
+            display: flex; gap: 5px; align-items: center;
+            padding: 14px 20px;
+            background: white;
+            border-radius: 0 20px 20px 20px;
+            border: 1px solid #eef1f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .typing-dots span {
+            width: 7px; height: 7px; border-radius: 50%;
+            background-color: #aaa;
+            animation: dotBounce 1.2s infinite ease-in-out;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="landing-screen" class="screen active">
+    <!-- ========================
+         화면 1: 새 홈 랜딩
+    ========================= -->
+    <div id="home-screen" class="screen active">
         <header class="header">
             <div class="header-left"></div>
-            <div class="text-logo" onclick="goToLanding()">COUGUIDE</div>
-            <div class="lang-toggle">
-                <span class="active">KO</span>
-                <span class="inactive">EN</span>
+            <div class="text-logo">COUGUIDE</div>
+            <div class="header-right">
+                <div class="lang-toggle">
+                    <span class="active">KO</span>
+                    <span class="inactive">EN</span>
+                </div>
             </div>
         </header>
-        
         <main>
-            <img src="mascot.png" alt="Mascot1" class="center-character">
+            <img src="mascot.png" alt="Mascot" class="home-mascot">
+            <div class="home-title">
+                CLS 캠프헬퍼를 위한<br>다양한 채용 가이드를 만나보세요
+            </div>
+            <div class="home-buttons">
+                <button class="home-btn home-btn-primary" onclick="goToGeneral()">일반문의</button>
+                <button class="home-btn home-btn-secondary" onclick="goToCampSelect()">캠프별 문의</button>
+            </div>
+            <div class="home-disclaimer">
+                ⓘ AI 챗봇은 오류가 있을 수 있습니다.
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================
+         화면 2: 일반문의 랜딩
+    ========================= -->
+    <div id="landing-screen" class="screen">
+        <header class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="goHome()">❮</button>
+            </div>
+            <div class="text-logo" onclick="goHome()">COUGUIDE</div>
+            <div class="header-right">
+                <div class="lang-toggle">
+                    <span class="active">KO</span>
+                    <span class="inactive">EN</span>
+                </div>
+            </div>
+        </header>
+        <main>
+            <img src="mascot.png" alt="Mascot" class="center-character">
             <div class="main-title">
                 CLS 캠프헬퍼를 위한<br>다양한 채용 가이드를 만나보세요
             </div>
-
             <div class="landing-input-box">
                 <input type="text" id="landingInput" placeholder="무엇을 도와드릴까요?" onkeypress="handleLandingEnter(event)">
                 <button class="send-btn-large" onclick="startChatFromLanding()">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
-
             <div class="disclaimer">
                 ⓘ AI 챗봇은 오류가 있을 수 있습니다. 중요한 사항은 상담으로 문의해주세요.<br>
                 개인정보 입력은 주의해주세요.
@@ -267,30 +483,31 @@
         </main>
     </div>
 
+    <!-- ========================
+         화면 3: 일반 채팅
+    ========================= -->
     <div id="chat-screen" class="screen">
         <header class="header">
             <div class="header-left">
-                <button class="back-btn" onclick="goToLanding()">❮</button>
+                <button class="back-btn" onclick="goToGeneral()">❮</button>
             </div>
-            <div class="text-logo" onclick="goToLanding()">COUGUIDE</div>
-            <div class="lang-toggle">
-                <span class="active">KO</span>
-                <span class="inactive">EN</span>
+            <div class="text-logo" onclick="goHome()">COUGUIDE</div>
+            <div class="header-right">
+                <div class="lang-toggle">
+                    <span class="active">KO</span>
+                    <span class="inactive">EN</span>
+                </div>
             </div>
         </header>
-
-        <div class="chat-container">
+        <div class="chat-container" id="chatContainer">
             <div class="chat-box" id="chatBox">
                 <div class="message-row bot-row">
                     <div class="bot-avatar">🤖</div>
                     <div class="message-bubble bot-message-bubble">안녕하세요! COUGUIDE입니다. 무엇을 도와드릴까요?</div>
                 </div>
             </div>
-            <div class="chat-disclaimer">
-                AI 챗봇은 오류가 있을 수 있습니다. 중요한 사항은 상담으로 문의해주세요.
-            </div>
+            <div class="chat-disclaimer">AI 챗봇은 오류가 있을 수 있습니다. 중요한 사항은 상담으로 문의해주세요.</div>
         </div>
-
         <div class="footer">
             <div class="chat-input-wrapper">
                 <input type="text" id="chatInput" placeholder="무엇을 도와드릴까요?" onkeypress="handleChatEnter(event)">
@@ -301,95 +518,367 @@
         </div>
     </div>
 
-    
+    <!-- ========================
+         화면 4: 캠프별 문의 (선택 + 채팅)
+    ========================= -->
+    <div id="camp-screen" class="screen">
+        <header class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="goHome()">❮</button>
+            </div>
+            <div class="text-logo" onclick="goHome()">COUGUIDE</div>
+            <div class="header-right">
+                <button class="camp-inquiry-btn" onclick="goToCampSelect()">캠프별 문의</button>
+                <div class="lang-toggle">
+                    <span class="active">KO</span>
+                    <span class="inactive">EN</span>
+                </div>
+            </div>
+        </header>
+        <div class="chat-container" id="campChatContainer">
+            <div class="chat-box" id="campChatBox"></div>
+            <div class="chat-disclaimer">AI 챗봇은 오류가 있을 수 있습니다. 중요한 사항은 상담으로 문의해주세요.</div>
+        </div>
+        <div class="footer">
+            <div class="chat-input-wrapper">
+                <input type="text" id="campChatInput" placeholder="무엇을 도와드릴까요?" onkeypress="handleCampChatEnter(event)">
+                <button class="send-btn-small" onclick="sendMessageFromCampChat()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const landingScreen = document.getElementById("landing-screen");
-        const chatScreen = document.getElementById("chat-screen");
-        const landingInput = document.getElementById("landingInput");
-        const chatInput = document.getElementById("chatInput");
-        const chatBox = document.getElementById("chatBox");
-        const chatContainer = document.querySelector(".chat-container");
+        // =========================================
+        // 데이터: 캠프 목록
+        // =========================================
+        const campData = {
+            "수도권": ["남양주 / 양주", "일산", "김포", "경기광주", "동탄 / 화성 / 수원 / 군포", "안양", "시흥 / 구로 / 안산", "송파 / 서초", "동인천", "서인천"],
+            "충청": ["대전", "천안", "청주"],
+            "경상": ["대구", "서부산 / 창원", "부산 / 울산"],
+            "전라": ["광주", "전주"],
+            "제주": ["제주"]
+        };
 
-        function goToLanding() {
-            chatScreen.classList.remove("active");
-            landingScreen.classList.add("active");
-            landingInput.value = "";
+        let selectedRegion = "수도권";
+        let selectedCamp = null; // 현재 선택된 캠프 (캠프별 채팅 모드)
+        let campChatMode = false; // 캠프 선택 완료 후 채팅 모드
+
+        // =========================================
+        // 화면 전환 함수
+        // =========================================
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function goHome() {
+            showScreen('home-screen');
+            selectedCamp = null;
+            campChatMode = false;
+        }
+
+        function goToGeneral() {
+            showScreen('landing-screen');
+            document.getElementById('landingInput').value = '';
+        }
+
+        function goToCampSelect() {
+            // 캠프 선택 화면 초기화
+            selectedCamp = null;
+            campChatMode = false;
+            selectedRegion = "수도권";
+            showScreen('camp-screen');
+            renderCampSelectUI();
+        }
+
+        // =========================================
+        // 캠프 선택 UI 렌더링
+        // =========================================
+        function renderCampSelectUI() {
+            const campChatBox = document.getElementById('campChatBox');
+            campChatBox.innerHTML = '';
+
+            // 봇 인트로 메시지
+            const introRow = document.createElement('div');
+            introRow.className = 'message-row bot-row';
+            introRow.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <div class="message-bubble bot-message-bubble">안녕하세요! COUGUIDE입니다.<br>문의를 희망하시는 캠프를 선택해주세요.</div>
+            `;
+            campChatBox.appendChild(introRow);
+
+            // 캠프 선택 카드
+            const cardRow = document.createElement('div');
+            cardRow.className = 'message-row bot-row';
+            cardRow.id = 'campCardRow';
+            cardRow.innerHTML = `
+                <div style="width:40px;flex-shrink:0;"></div>
+                <div class="camp-card">
+                    <div class="camp-card-title">캠프 지역을 선택해주세요</div>
+                    <div class="region-tabs" id="regionTabs"></div>
+                    <hr class="camp-divider">
+                    <div class="swipe-hint">
+                        <span class="swipe-hint-arrow">❮</span>
+                        <span class="swipe-hint-center"><span class="swipe-hint-icon">👆</span> 좌우로 스와이프하여 다른 캠프를 확인하세요</span>
+                        <span class="swipe-hint-arrow">❯</span>
+                    </div>
+                    <div class="camp-list" id="campList"></div>
+                </div>
+            `;
+            campChatBox.appendChild(cardRow);
+
+            renderRegionTabs();
+            renderCampList();
+            initSwipe();
+
+            const container = document.getElementById('campChatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // 스와이프 로직 — 소분류(campList) 영역을 스와이프하면 대분류 전환
+        function initSwipe() {
+            const campList = document.getElementById('campList');
+            if (!campList) return;
+
+            const regions = Object.keys(campData);
+            let startX = 0;
+            let startY = 0;
+            let isDragging = false;
+
+            function getRegionIndex() {
+                return regions.indexOf(selectedRegion);
+            }
+
+            function goToRegionByIndex(idx) {
+                if (idx < 0 || idx >= regions.length) return;
+                selectedRegion = regions[idx];
+                renderRegionTabs();
+                renderCampList();
+                initSwipe(); // 재연결
+            }
+
+            // 터치 (모바일)
+            campList.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+            }, { passive: true });
+
+            campList.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diffX = e.changedTouches[0].clientX - startX;
+                const diffY = e.changedTouches[0].clientY - startY;
+                // 수평 스와이프가 수직보다 클 때만 처리
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) goToRegionByIndex(getRegionIndex() + 1);
+                    else goToRegionByIndex(getRegionIndex() - 1);
+                }
+            }, { passive: true });
+
+            // 마우스 드래그 (PC)
+            campList.addEventListener('mousedown', (e) => {
+                startX = e.clientX;
+                startY = e.clientY;
+                isDragging = true;
+            });
+            campList.addEventListener('mouseup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diffX = e.clientX - startX;
+                const diffY = e.clientY - startY;
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) goToRegionByIndex(getRegionIndex() + 1);
+                    else goToRegionByIndex(getRegionIndex() - 1);
+                }
+            });
+            campList.addEventListener('mouseleave', () => { isDragging = false; });
+        }
+
+        function renderRegionTabs() {
+            const tabsEl = document.getElementById('regionTabs');
+            tabsEl.innerHTML = '';
+            Object.keys(campData).forEach(region => {
+                const tab = document.createElement('button');
+                tab.className = 'region-tab' + (region === selectedRegion ? ' selected' : '');
+                tab.textContent = region;
+                tab.onclick = () => {
+                    selectedRegion = region;
+                    renderRegionTabs();
+                    renderCampList();
+                };
+                tabsEl.appendChild(tab);
+            });
+        }
+
+        function renderCampList() {
+            const listEl = document.getElementById('campList');
+            listEl.innerHTML = '';
+            campData[selectedRegion].forEach(camp => {
+                const chip = document.createElement('button');
+                chip.className = 'camp-chip';
+                chip.textContent = camp;
+                chip.onclick = () => selectCamp(camp);
+                listEl.appendChild(chip);
+            });
+        }
+
+        // =========================================
+        // 캠프 선택 완료 → 채팅 모드 전환
+        // =========================================
+        function selectCamp(camp) {
+            selectedCamp = camp;
+            campChatMode = true;
+
+            const campChatBox = document.getElementById('campChatBox');
+
+            // 카드 제거
+            const cardRow = document.getElementById('campCardRow');
+            if (cardRow) cardRow.remove();
+
+            // 사용자 선택 메시지
+            const userRow = document.createElement('div');
+            userRow.className = 'message-row user-row';
+            userRow.innerHTML = `<div class="message-bubble user-message-bubble">${camp}</div>`;
+            campChatBox.appendChild(userRow);
+
+            // 봇 응답: 캠프 전용 인사
+            const botRow = document.createElement('div');
+            botRow.className = 'message-row bot-row';
+            botRow.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <div class="message-bubble bot-message-bubble">안녕하세요. ${camp} 캠프 전용 챗봇입니다. 무엇이든 물어봐주세요!</div>
+            `;
+            campChatBox.appendChild(botRow);
+
+            const container = document.getElementById('campChatContainer');
+            container.scrollTop = container.scrollHeight;
+
+            document.getElementById('campChatInput').focus();
+        }
+
+        // =========================================
+        // 일반 채팅 로직
+        // =========================================
+        function handleLandingEnter(event) {
+            if (event.key === "Enter") startChatFromLanding();
+        }
+        function handleChatEnter(event) {
+            if (event.key === "Enter") sendMessageFromChat();
+        }
+
+        function startChatFromLanding() {
+            const text = document.getElementById('landingInput').value.trim();
+            if (!text) return;
+
+            // 채팅 화면 초기화 후 전환
+            const chatBox = document.getElementById('chatBox');
             chatBox.innerHTML = `
                 <div class="message-row bot-row">
                     <div class="bot-avatar">🤖</div>
                     <div class="message-bubble bot-message-bubble">안녕하세요! COUGUIDE입니다. 무엇을 도와드릴까요?</div>
                 </div>
             `;
-        }
-
-        function handleLandingEnter(event) {
-            if (event.key === "Enter") startChatFromLanding();
-        }
-
-        function handleChatEnter(event) {
-            if (event.key === "Enter") sendMessageFromChat();
-        }
-
-        function startChatFromLanding() {
-            const text = landingInput.value.trim();
-            if (!text) return;
-            landingScreen.classList.remove("active");
-            chatScreen.classList.add("active");
-            document.querySelector('.back-btn').style.display = 'block';
-            executeChatLogic(text);
+            showScreen('chat-screen');
+            executeChatLogic(text, 'chatBox', 'chatContainer');
         }
 
         function sendMessageFromChat() {
-            const text = chatInput.value.trim();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
             if (!text) return;
-            executeChatLogic(text);
-            chatInput.value = ""; 
+            input.value = '';
+            executeChatLogic(text, 'chatBox', 'chatContainer');
         }
 
-        async function executeChatLogic(text) {
-            appendMessage("user", text);
+        // =========================================
+        // 캠프별 채팅 로직
+        // =========================================
+        function handleCampChatEnter(event) {
+            if (event.key === "Enter") sendMessageFromCampChat();
+        }
+
+        function sendMessageFromCampChat() {
+            if (!campChatMode) return; // 캠프 미선택 시 무시
+            const input = document.getElementById('campChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            executeChatLogic(text, 'campChatBox', 'campChatContainer');
+        }
+
+        // =========================================
+        // 공통 AI 채팅 실행
+        // =========================================
+        async function executeChatLogic(text, boxId, containerId) {
+            const chatBox = document.getElementById(boxId);
+            const container = document.getElementById(containerId);
+
+            // 사용자 메시지
+            appendMessageTo(chatBox, container, "user", text);
+
+            // 로딩 dots
+            const loadingRow = document.createElement('div');
+            loadingRow.className = 'message-row bot-row';
+            loadingRow.id = 'loadingRow_' + boxId;
+            loadingRow.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <div class="typing-dots"><span></span><span></span><span></span></div>
+            `;
+            chatBox.appendChild(loadingRow);
+            container.scrollTop = container.scrollHeight;
+
             try {
                 const response = await fetch("/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: text }) 
+                    body: JSON.stringify({ message: text })
                 });
                 const data = await response.json();
-                appendMessage("bot", data.reply);
+
+                // 로딩 제거
+                const lr = document.getElementById('loadingRow_' + boxId);
+                if (lr) lr.remove();
+
+                appendMessageTo(chatBox, container, "bot", data.reply);
             } catch (error) {
-                console.error("Error:", error);
-                appendMessage("bot", "서버와 연결할 수 없습니다. 백엔드 서버가 켜져 있는지 확인해 주세요.");
+                const lr = document.getElementById('loadingRow_' + boxId);
+                if (lr) lr.remove();
+                appendMessageTo(chatBox, container, "bot", "서버와 연결할 수 없습니다. 백엔드 서버가 켜져 있는지 확인해 주세요.");
             }
         }
 
-        function appendMessage(sender, text) {
+        function appendMessageTo(chatBox, container, sender, text) {
             const row = document.createElement("div");
             row.classList.add("message-row");
-            
+
             if (sender === "user") {
                 row.classList.add("user-row");
-                row.innerHTML = `<div class="message-bubble user-message-bubble">${text}</div>`;
+                row.innerHTML = `<div class="message-bubble user-message-bubble">${escapeHtml(text)}</div>`;
             } else {
                 row.classList.add("bot-row");
-                
-                // 1. 굵은 글씨(**텍스트**) 변환
-                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
-                
-                // 2. 💡 링크(http:// 또는 https://) 자동 파란색 클릭 버튼 변환!
-                formattedText = formattedText.replace(
-                    /(https?:\/\/[^\s]+)/g, 
-                    '<a href="$1" target="_blank" style="color: #0078ff; text-decoration: underline; font-weight: 700;">$1</a>'
+                let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                formatted = formatted.replace(
+                    /(https?:\/\/[^\s<]+)/g,
+                    '<a href="$1" target="_blank" style="color:#0078ff;text-decoration:underline;font-weight:700;">$1</a>'
                 );
-
                 row.innerHTML = `
                     <div class="bot-avatar">🤖</div>
-                    <div class="message-bubble bot-message-bubble">${formattedText}</div>
+                    <div class="message-bubble bot-message-bubble">${formatted}</div>
                 `;
             }
-            
+
             chatBox.appendChild(row);
-            chatContainer.scrollTop = chatContainer.scrollHeight; 
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
         }
     </script>
 </body>
