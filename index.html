@@ -43,16 +43,16 @@
             border-bottom: 1px solid #e0e5ea;
             z-index: 10;
             flex-shrink: 0;
-            position: relative;
             min-height: 60px;
         }
         .header-left {
+            flex: 1;
             display: flex; align-items: center; gap: 10px;
-            min-width: 80px;
+            justify-content: flex-start;
         }
         .header-right {
-            display: flex; align-items: center; gap: 10px;
-            min-width: 80px;
+            flex: 1;
+            display: flex; align-items: center; gap: 8px;
             justify-content: flex-end;
         }
         .back-btn {
@@ -60,13 +60,17 @@
             padding: 5px; display: flex; align-items: center; justify-content: center;
         }
         .text-logo {
+            flex: 1;
+            text-align: center;
             font-size: 1.25rem;
             font-weight: 900;
             color: #111;
             cursor: pointer;
             letter-spacing: -0.8px;
-            position: absolute;
-            left: 50%; transform: translateX(-50%);
+            position: static;
+            transform: none;
+            white-space: nowrap;
+            padding: 0 12px;
         }
         .lang-toggle {
             display: flex; align-items: center;
@@ -639,6 +643,7 @@
         }
 
         // 스와이프 로직 — 소분류(campList) 영역을 스와이프하면 대분류 전환
+        // initSwipe는 카드 최초 생성 시 딱 한 번만 호출, 이벤트 누적 없음
         function initSwipe() {
             const campList = document.getElementById('campList');
             if (!campList) return;
@@ -656,36 +661,42 @@
                 if (idx < 0 || idx >= regions.length) return;
                 selectedRegion = regions[idx];
                 renderRegionTabs();
-                renderCampList();
-                initSwipe(); // 재연결
+                renderCampList(); // initSwipe 재호출 없음 — 리스너는 campList 부모카드에 위임
             }
 
-            // 터치 (모바일)
-            campList.addEventListener('touchstart', (e) => {
+            // campList는 renderCampList() 때마다 innerHTML이 교체되므로
+            // 이벤트를 campList 자체가 아닌 부모인 camp-card에 위임합니다.
+            const campCard = campList.closest('.camp-card');
+            if (!campCard) return;
+
+            // 이미 붙어있는 리스너 방지용 플래그
+            if (campCard._swipeInit) return;
+            campCard._swipeInit = true;
+
+            campCard.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
                 isDragging = true;
             }, { passive: true });
 
-            campList.addEventListener('touchend', (e) => {
+            campCard.addEventListener('touchend', (e) => {
                 if (!isDragging) return;
                 isDragging = false;
                 const diffX = e.changedTouches[0].clientX - startX;
                 const diffY = e.changedTouches[0].clientY - startY;
-                // 수평 스와이프가 수직보다 클 때만 처리
                 if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
                     if (diffX < 0) goToRegionByIndex(getRegionIndex() + 1);
                     else goToRegionByIndex(getRegionIndex() - 1);
                 }
             }, { passive: true });
 
-            // 마우스 드래그 (PC)
-            campList.addEventListener('mousedown', (e) => {
+            campCard.addEventListener('mousedown', (e) => {
                 startX = e.clientX;
                 startY = e.clientY;
                 isDragging = true;
             });
-            campList.addEventListener('mouseup', (e) => {
+
+            campCard.addEventListener('mouseup', (e) => {
                 if (!isDragging) return;
                 isDragging = false;
                 const diffX = e.clientX - startX;
@@ -695,7 +706,8 @@
                     else goToRegionByIndex(getRegionIndex() - 1);
                 }
             });
-            campList.addEventListener('mouseleave', () => { isDragging = false; });
+
+            campCard.addEventListener('mouseleave', () => { isDragging = false; });
         }
 
         function renderRegionTabs() {
