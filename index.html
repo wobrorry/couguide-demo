@@ -149,6 +149,8 @@
         .home-btn-secondary {
             background-color: #7ab3f8;
             color: white;
+            padding: 20px 60px;
+            font-size: 1.2rem;
         }
         .home-btn-secondary:hover { background-color: #69a2e7; transform: translateY(-1px); }
         .home-disclaimer {
@@ -440,7 +442,6 @@
                 CLS 캠프헬퍼를 위한<br>다양한 채용 가이드를 만나보세요
             </div>
             <div class="home-buttons">
-                <button class="home-btn home-btn-primary" onclick="goToGeneral()">일반문의</button>
                 <button class="home-btn home-btn-secondary" onclick="goToCampSelect()">캠프별 문의</button>
             </div>
             <div class="home-disclaimer">
@@ -528,6 +529,7 @@
             </div>
             <div class="text-logo" onclick="goHome()">COUGUIDE</div>
             <div class="header-right">
+                <button class="camp-inquiry-btn" onclick="goToCampSelect()">캠프별 문의</button>
                 <div class="lang-toggle">
                     <span class="active">KO</span>
                     <span class="inactive">EN</span>
@@ -748,7 +750,7 @@
             botRow.className = 'message-row bot-row';
             botRow.innerHTML = `
                 <div class="bot-avatar">🤖</div>
-                <div class="message-bubble bot-message-bubble">안녕하세요. ${camp} 캠프 COUGUIDE입니다. 무엇이든 물어보세요!</div>
+                <div class="message-bubble bot-message-bubble">안녕하세요. ${camp} 캠프 전용 챗봇입니다. 무엇이든 물어봐주세요!</div>
             `;
             campChatBox.appendChild(botRow);
 
@@ -815,10 +817,10 @@
             const chatBox = document.getElementById(boxId);
             const container = document.getElementById(containerId);
 
-            // 1. 사용자 화면에는 원래 입력한 텍스트만 깔끔하게 표시
+            // 사용자 메시지
             appendMessageTo(chatBox, container, "user", text);
 
-            // 로딩 dots 추가
+            // 로딩 dots
             const loadingRow = document.createElement('div');
             loadingRow.className = 'message-row bot-row';
             loadingRow.id = 'loadingRow_' + boxId;
@@ -829,20 +831,11 @@
             chatBox.appendChild(loadingRow);
             container.scrollTop = container.scrollHeight;
 
-            // 💡 2. 서버로 보낼 '비밀 메시지' 가공
-            let payloadMessage = text;
-            
-            // 만약 캠프를 선택한 상태라면, 메시지 앞에 몰래 캠프 이름을 붙여줍니다.
-            if (campChatMode && selectedCamp) {
-                payloadMessage = `[현재 사용자가 질문하는 캠프: ${selectedCamp}] ` + text;
-            }
-
             try {
                 const response = await fetch("/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    // 3. 원래 text가 아닌, 캠프 이름이 붙은 payloadMessage를 서버로 전송!
-                    body: JSON.stringify({ message: payloadMessage })
+                    body: JSON.stringify({ message: text })
                 });
                 const data = await response.json();
 
