@@ -539,7 +539,7 @@
             </div>
             <div class="text-logo" onclick="goHome()">COUGUIDE</div>
             <div class="header-right">
-                <button class="camp-inquiry-btn" onclick="goToCampSelect()">문의하기</button>
+                <button class="camp-inquiry-btn" onclick="goToCampSelect()">캠프 선택</button>
                 <div class="lang-toggle">
                     <span class="active">KO</span>
                     <span class="inactive">EN</span>
@@ -750,6 +750,9 @@
         function selectCamp(camp) {
             selectedCamp = camp;
             campChatMode = true;
+
+            document.querySelector('.camp-inquiry-btn').textContent = camp;
+
 
             const campChatBox = document.getElementById('campChatBox');
 
